@@ -15,7 +15,7 @@ export default function Chat({text}) {
 
   const dispatch = useDispatch();
   const contacts = useSelector(state => state.chats);
-  const selectedUser = contacts.chats.filter(el => el.fullName.toLowerCase() === name.toLowerCase())[0]
+  const selectedUser = contacts.chats.filter(el => el.fullName.toLowerCase() === (name ?? "").toLowerCase())[0]
 
 
   function addNewMessage(e) {

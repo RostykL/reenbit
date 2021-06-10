@@ -26,19 +26,25 @@ export default function Chats() {
   return (
 	  <ListOfChats>
 		{contacts.chats && searchedContacts.map(el => {
-		  const lastMessage = el.messages[el.messages.length - 1];
-		  return <NavLink
-			  to={`/${el.fullName}`}
-			  key={el.id}
-			  onClick={() => changeChat(el.id)}
-		  >
-			<ChatBlock
-				fullname={el.fullName}
-				date={lastMessage.date}
-				lastMessage={lastMessage.text}
-			/>
-		  </NavLink>;
-		})}
+			  if (el) {
+				const lastMessage = el && el.messages && el.messages[el.messages.length - 1];
+				if (lastMessage) {
+				  return <NavLink
+					  to={`/${el.fullName}`}
+					  key={el.id}
+					  onClick={() => changeChat(el.id)}
+				  >
+					<ChatBlock
+						fullname={el.fullName}
+						date={lastMessage.date}
+						lastMessage={lastMessage.text}
+					/>
+				  </NavLink>;
+				}
+			  }
+			}
+		)}
+
 	  </ListOfChats>
   );
 }
