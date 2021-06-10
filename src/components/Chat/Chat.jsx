@@ -2,27 +2,29 @@ import {ChatWrapper, ChatWith, ChatWindow, ChatInputWrapper, ChatInput} from "./
 import {Message} from "../Message/Message";
 import {useDispatch, useSelector} from "react-redux";
 
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {getChuckResponse} from "../../redux/actions/getChuckResponse";
+
+import {useParams} from 'react-router-dom';
 
 import {uid} from 'uid'
 
 export default function Chat({text}) {
   const [message, setMessage] = useState("")
+  const {name} = useParams()
 
   const dispatch = useDispatch();
-  const chatMessages = useSelector(state => state.chats).selectedChat
+  const contacts = useSelector(state => state.chats);
+  const selectedUser = contacts.chats.filter(el => el.fullName.toLowerCase() === name.toLowerCase())[0]
 
 
   function addNewMessage(e) {
 	if (e.keyCode === 13 && message.length > 0) {
-	  dispatch({type: "SEND_MESSAGE", payload: {id: chatMessages.id, message: message, me: true}})
-	  setTimeout(() => {
-		dispatch(getChuckResponse(chatMessages.id))
-		dispatch({type: "REFRESH_USERS", payload: {id: chatMessages.id, newMsg: true}})
-		setTimeout(() => {
-		  dispatch({type: "REFRESH_USERS", payload: {id: chatMessages.id, newMsg: false}})
-		}, 3000)
+	  dispatch({type: "SEND_MESSAGE", payload: {id: selectedUser.id, message: message, me: true}})
+	  setTimeout(async () => {
+		dispatch(getChuckResponse(selectedUser.id))
+		dispatch({type: "NOTIFY_USER", payload: selectedUser.fullName})
+		dispatch({type: "REFRESH_SEARCHED_CHAT", payload: {id: selectedUser.id}})
 	  }, 2000)
 	  setMessage("")
 	}
@@ -33,19 +35,19 @@ export default function Chat({text}) {
   return (
 	  <ChatWrapper>
 		<ChatWith>
-		  {chatMessages.fullName}
+		  {selectedUser.fullName}
 		</ChatWith>
 		<ChatWindow>
-		  {chatMessages.messages && chatMessages && chatMessages.messages.map(el => {
+		  {selectedUser.messages && selectedUser && selectedUser.messages.map(el => {
 			return <Message me={el.me} text={el.text} date={el.date} key={uid()}/>
 		  })}
 		</ChatWindow>
 		<ChatInputWrapper>
-		  <ChatInput placeholder={"Press enter to send a message"}
-					 onKeyUp={e => addNewMessage(e)}
-					 onChange={e => setMessage(e.target.value)}
-					 value={message}
-		  />
+		  {selectedUser.messages && <ChatInput placeholder={"Press enter to send a message"}
+											   onKeyUp={e => addNewMessage(e)}
+											   onChange={e => setMessage(e.target.value)}
+											   value={message}
+		  />}
 		</ChatInputWrapper>
 	  </ChatWrapper>
   );

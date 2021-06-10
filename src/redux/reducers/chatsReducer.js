@@ -44,7 +44,6 @@ const initialState = {
 	}
   ],
   selectedChat: {},
-  searched: [],
   loading: true,
   error: null
 }
@@ -60,7 +59,8 @@ export default function chatsReducer(state = initialState, action) {
 	  };
 	case "SEND_MESSAGE":
 	  return {
-		...state, chats: state.chats.map((el,i) => {
+		...state,
+		chats: state.chats.map(el => {
 		  if (el.id === action.payload.id) {
 			el.messages.push({
 			  id: new Date(),
@@ -72,30 +72,6 @@ export default function chatsReducer(state = initialState, action) {
 		  return el;
 		})
 	  };
-	case "REFRESH_USERS":
-	  return {
-		...state,
-		chats: [
-		  {...state.chats.filter(el => el.id === action.payload.id)[0], newMsg: action.payload.newMsg},
-		  ...state.chats.filter(el => el.id !== action.payload.id)
-		],
-	  }
-	case "SEARCHED_USERS":
-	  return {
-	    ...state,
-		searched: action.payload.users
-	  }
-
-	case "CHANGE_NEW_MESSAGE":
-	  return {
-		...state,
-		chats: state.chats.map(el => {
-		  if(el.id === action.payload.id) {
-		    el.newMsg = action.payload.newMsg;
-		  }
-		  return el;
-		})
-	  }
 	default:
 	  return state;
   }

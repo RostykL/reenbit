@@ -6,19 +6,23 @@ import {useDispatch, useSelector} from "react-redux";
 export default function SearchBar() {
   const [name, setName] = useState("")
   const chats = useSelector(state => state.chats).chats;
-  const tmpChats = [...chats];
+  const [tmpChats, setTmpChats] = useState(() => [...chats])
 
   const dispatch = useDispatch()
 
   useEffect(() => {
-    let users = [];
-	for (let i = 0; i < tmpChats.length; i++) {
-	  if (new RegExp(name.toLowerCase()).test(tmpChats[i].fullName.toLowerCase())) {
-		users.push(chats[i]);
+	if (name.length === 0) {
+	  dispatch({type: "FIND_CHAT", payload: tmpChats})
+	} else {
+	  let users = [];
+	  for (let i = 0; i < tmpChats.length; i++) {
+		if (new RegExp(name.toLowerCase()).test(tmpChats[i].fullName.toLowerCase())) {
+		  users.push(chats[i]);
+		}
 	  }
+	  dispatch({type: "FIND_CHAT", payload: users})
 	}
-	console.log(users)
-	dispatch({type: "SEARCHED_USERS", payload: {users}})
+
   }, [name])
 
   return (
